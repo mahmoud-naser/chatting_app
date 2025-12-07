@@ -1,0 +1,22 @@
+{
+  "@@locale": "de",
+  "appTitle": "Chat-App",
+  "aiAssistant": "KI-Assistent",
+  "online": "Online",
+  "typing": "Tippt...",
+  "settings": "Einstellungen",
+  "clearChat": "Chat löschen",
+  "startConversation": "Beginne ein Gespräch",
+  "askMeAnything": "Frag mich alles",
+  "clearChatHistory": "Möchten Sie den Chat-Verlauf wirklich löschen?",
+  "cancel": "Abbrechen",
+  "clear": "Löschen",
+  "appearance": "Erscheinungsbild",
+  "light": "Hell",
+  "dark": "Dunkel",
+  "systemDefault": "Systemstandard",
+  "language": "Sprache",
+  "moreSettings": "Weitere Einstellungen",
+  "moreSettingsComingSoon": "Weitere Einstellungen kommen bald..."
+}
+

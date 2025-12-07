@@ -1,0 +1,55 @@
+name: chat_app_new
+description: "A Flutter chat app with GPT integration"
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.0.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # UI & Navigation
+  auto_route: ^6.1.0
+  flutter_chat_ui: ^1.6.6
+  flutter_chat_types: ^3.6.0
+  url_launcher: ^6.1.10
+
+  # State Management
+  flutter_bloc: ^8.0.1
+
+  # Utilities
+  intl: ^0.20.2
+  flutter_localizations:
+    sdk: flutter
+  shared_preferences: ^2.2.2
+  permission_handler: ^11.3.1
+  speech_to_text: ^7.0.0
+
+  # Dependency Injection (optional - can be simplified)
+  provider: ^6.0.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+  # Code generation
+  build_runner: ^2.1.7
+  auto_route_generator: ^6.0.0
+
+flutter:
+  uses-material-design: true
+  generate: true
+
+  # Assets and fonts commented out - add them later if needed
+  # assets:
+  #   - assets/images/
+
+  # fonts:
+  #   - family: Inter
+  #     fonts:
+  #       - asset: assets/fonts/inter/Inter-ExtraLight.ttf
+  #         weight: 200

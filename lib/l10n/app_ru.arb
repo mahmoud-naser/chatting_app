@@ -1,0 +1,22 @@
+{
+  "@@locale": "ru",
+  "appTitle": "Чат-приложение",
+  "aiAssistant": "AI-ассистент",
+  "online": "В сети",
+  "typing": "Печатает...",
+  "settings": "Настройки",
+  "clearChat": "Очистить чат",
+  "startConversation": "Начать разговор",
+  "askMeAnything": "Спросите меня о чем угодно",
+  "clearChatHistory": "Вы уверены, что хотите очистить историю чата?",
+  "cancel": "Отмена",
+  "clear": "Очистить",
+  "appearance": "Внешний вид",
+  "light": "Светлый",
+  "dark": "Темный",
+  "systemDefault": "Системный по умолчанию",
+  "language": "Язык",
+  "moreSettings": "Дополнительные настройки",
+  "moreSettingsComingSoon": "Дополнительные настройки скоро..."
+}
+

@@ -1,0 +1,22 @@
+{
+  "@@locale": "ko",
+  "appTitle": "채팅 앱",
+  "aiAssistant": "AI 어시스턴트",
+  "online": "온라인",
+  "typing": "입력 중...",
+  "settings": "설정",
+  "clearChat": "채팅 지우기",
+  "startConversation": "대화 시작",
+  "askMeAnything": "무엇이든 물어보세요",
+  "clearChatHistory": "채팅 기록을 지우시겠습니까?",
+  "cancel": "취소",
+  "clear": "지우기",
+  "appearance": "모양",
+  "light": "라이트",
+  "dark": "다크",
+  "systemDefault": "시스템 기본값",
+  "language": "언어",
+  "moreSettings": "추가 설정",
+  "moreSettingsComingSoon": "추가 설정이 곧 제공됩니다..."
+}
+

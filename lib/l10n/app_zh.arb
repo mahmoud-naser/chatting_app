@@ -1,0 +1,22 @@
+{
+  "@@locale": "zh",
+  "appTitle": "聊天应用",
+  "aiAssistant": "AI助手",
+  "online": "在线",
+  "typing": "正在输入...",
+  "settings": "设置",
+  "clearChat": "清除聊天",
+  "startConversation": "开始对话",
+  "askMeAnything": "问我任何问题",
+  "clearChatHistory": "您确定要清除聊天记录吗？",
+  "cancel": "取消",
+  "clear": "清除",
+  "appearance": "外观",
+  "light": "浅色",
+  "dark": "深色",
+  "systemDefault": "系统默认",
+  "language": "语言",
+  "moreSettings": "更多设置",
+  "moreSettingsComingSoon": "更多设置即将推出..."
+}
+

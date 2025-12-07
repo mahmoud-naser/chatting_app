@@ -1,0 +1,22 @@
+{
+  "@@locale": "fr",
+  "appTitle": "Application de Chat",
+  "aiAssistant": "Assistant IA",
+  "online": "En ligne",
+  "typing": "En train d'écrire...",
+  "settings": "Paramètres",
+  "clearChat": "Effacer le chat",
+  "startConversation": "Commencer une conversation",
+  "askMeAnything": "Demandez-moi n'importe quoi",
+  "clearChatHistory": "Êtes-vous sûr de vouloir effacer l'historique du chat?",
+  "cancel": "Annuler",
+  "clear": "Effacer",
+  "appearance": "Apparence",
+  "light": "Clair",
+  "dark": "Sombre",
+  "systemDefault": "Par défaut du système",
+  "language": "Langue",
+  "moreSettings": "Plus de paramètres",
+  "moreSettingsComingSoon": "Plus de paramètres à venir..."
+}
+

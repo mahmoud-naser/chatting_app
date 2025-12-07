@@ -1,0 +1,22 @@
+{
+  "@@locale": "ja",
+  "appTitle": "チャットアプリ",
+  "aiAssistant": "AIアシスタント",
+  "online": "オンライン",
+  "typing": "入力中...",
+  "settings": "設定",
+  "clearChat": "チャットをクリア",
+  "startConversation": "会話を始める",
+  "askMeAnything": "何でも聞いてください",
+  "clearChatHistory": "チャット履歴をクリアしてもよろしいですか？",
+  "cancel": "キャンセル",
+  "clear": "クリア",
+  "appearance": "外観",
+  "light": "ライト",
+  "dark": "ダーク",
+  "systemDefault": "システムデフォルト",
+  "language": "言語",
+  "moreSettings": "その他の設定",
+  "moreSettingsComingSoon": "その他の設定は間もなく..."
+}
+

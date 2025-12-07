@@ -1,0 +1,22 @@
+{
+  "@@locale": "ar",
+  "appTitle": "تطبيق الدردشة",
+  "aiAssistant": "مساعد ذكي",
+  "online": "متصل",
+  "typing": "يكتب...",
+  "settings": "الإعدادات",
+  "clearChat": "مسح الدردشة",
+  "startConversation": "ابدأ محادثة",
+  "askMeAnything": "اسألني أي شيء",
+  "clearChatHistory": "هل أنت متأكد أنك تريد مسح سجل الدردشة؟",
+  "cancel": "إلغاء",
+  "clear": "مسح",
+  "appearance": "المظهر",
+  "light": "فاتح",
+  "dark": "داكن",
+  "systemDefault": "افتراضي النظام",
+  "language": "اللغة",
+  "moreSettings": "إعدادات أكثر",
+  "moreSettingsComingSoon": "المزيد من الإعدادات قريباً..."
+}
+

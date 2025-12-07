@@ -1,0 +1,76 @@
+{
+  "@@locale": "en",
+  "appTitle": "Chat App",
+  "@appTitle": {
+    "description": "The application title"
+  },
+  "aiAssistant": "AI Assistant",
+  "@aiAssistant": {
+    "description": "Title for AI assistant in chat header"
+  },
+  "online": "Online",
+  "@online": {
+    "description": "Status indicator when assistant is online"
+  },
+  "typing": "Typing...",
+  "@typing": {
+    "description": "Status indicator when assistant is typing"
+  },
+  "settings": "Settings",
+  "@settings": {
+    "description": "Settings page title"
+  },
+  "clearChat": "Clear chat",
+  "@clearChat": {
+    "description": "Tooltip for clear chat button"
+  },
+  "startConversation": "Start a conversation",
+  "@startConversation": {
+    "description": "Empty state title"
+  },
+  "askMeAnything": "Ask me anything",
+  "@askMeAnything": {
+    "description": "Empty state subtitle"
+  },
+  "clearChatHistory": "Are you sure you want to clear chat history?",
+  "@clearChatHistory": {
+    "description": "Confirmation dialog message"
+  },
+  "cancel": "Cancel",
+  "@cancel": {
+    "description": "Cancel button text"
+  },
+  "clear": "Clear",
+  "@clear": {
+    "description": "Clear button text"
+  },
+  "appearance": "Appearance",
+  "@appearance": {
+    "description": "Settings section title for appearance"
+  },
+  "light": "Light",
+  "@light": {
+    "description": "Light theme option"
+  },
+  "dark": "Dark",
+  "@dark": {
+    "description": "Dark theme option"
+  },
+  "systemDefault": "System Default",
+  "@systemDefault": {
+    "description": "System default theme option"
+  },
+  "language": "Language",
+  "@language": {
+    "description": "Settings section title for language"
+  },
+  "moreSettings": "More Settings",
+  "@moreSettings": {
+    "description": "Settings section title for future settings"
+  },
+  "moreSettingsComingSoon": "More settings coming soon...",
+  "@moreSettingsComingSoon": {
+    "description": "Placeholder text for future settings"
+  }
+}
+

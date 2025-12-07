@@ -1,0 +1,22 @@
+{
+  "@@locale": "hi",
+  "appTitle": "चैट ऐप",
+  "aiAssistant": "AI सहायक",
+  "online": "ऑनलाइन",
+  "typing": "टाइप कर रहे हैं...",
+  "settings": "सेटिंग्स",
+  "clearChat": "चैट साफ़ करें",
+  "startConversation": "बातचीत शुरू करें",
+  "askMeAnything": "मुझसे कुछ भी पूछें",
+  "clearChatHistory": "क्या आप वाकई चैट इतिहास साफ़ करना चाहते हैं?",
+  "cancel": "रद्द करें",
+  "clear": "साफ़ करें",
+  "appearance": "दिखावट",
+  "light": "हल्का",
+  "dark": "गहरा",
+  "systemDefault": "सिस्टम डिफॉल्ट",
+  "language": "भाषा",
+  "moreSettings": "अधिक सेटिंग्स",
+  "moreSettingsComingSoon": "अधिक सेटिंग्स जल्द ही..."
+}
+

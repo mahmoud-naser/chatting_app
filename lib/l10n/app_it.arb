@@ -1,0 +1,22 @@
+{
+  "@@locale": "it",
+  "appTitle": "App Chat",
+  "aiAssistant": "Assistente IA",
+  "online": "Online",
+  "typing": "Digitando...",
+  "settings": "Impostazioni",
+  "clearChat": "Cancella chat",
+  "startConversation": "Inizia una conversazione",
+  "askMeAnything": "Chiedimi qualsiasi cosa",
+  "clearChatHistory": "Sei sicuro di voler cancellare la cronologia della chat?",
+  "cancel": "Annulla",
+  "clear": "Cancella",
+  "appearance": "Aspetto",
+  "light": "Chiaro",
+  "dark": "Scuro",
+  "systemDefault": "Predefinito di sistema",
+  "language": "Lingua",
+  "moreSettings": "Altre impostazioni",
+  "moreSettingsComingSoon": "Altre impostazioni in arrivo..."
+}
+
