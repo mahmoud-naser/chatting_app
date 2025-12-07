@@ -18,6 +18,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get online => 'オンライン';
 
   @override
+  String get offline => 'オフライン';
+
+  @override
   String get typing => '入力中...';
 
   @override

@@ -18,6 +18,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get online => 'Online';
 
   @override
+  String get offline => 'Offline';
+
+  @override
   String get typing => 'Tippt...';
 
   @override

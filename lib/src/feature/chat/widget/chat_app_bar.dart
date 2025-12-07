@@ -9,9 +9,15 @@ import '../../../../l10n/app_localizations.dart';
 
 class ChatAppBar extends StatelessWidget implements PreferredSizeWidget {
   static const double _preferredHeight = 72;
-  final bool isTyping;
 
-  const ChatAppBar({required this.isTyping, super.key});
+  final bool isTyping;
+  final bool isOnline;  // ⬅ تمت إضافتها
+
+  const ChatAppBar({
+    required this.isTyping,
+    required this.isOnline,   // ⬅ الجديدة
+    super.key,
+  });
 
   @override
   Size get preferredSize => const Size.fromHeight(_preferredHeight);
@@ -52,7 +58,8 @@ class ChatAppBar extends StatelessWidget implements PreferredSizeWidget {
                   color: Theme.of(context).primaryColor,
                 ),
               ),
-              // Centered title
+
+              // Centered Title
               Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -66,11 +73,17 @@ class ChatAppBar extends StatelessWidget implements PreferredSizeWidget {
                     ),
                   ),
                   const SizedBox(height: 2),
+
+                  // --------------------------
+                  //     TYPING / ONLINE
+                  // --------------------------
+
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       if (isTyping) ...[
+                        // Typing indicator
                         SizedBox(
                           width: 12,
                           height: 12,
@@ -80,33 +93,44 @@ class ChatAppBar extends StatelessWidget implements PreferredSizeWidget {
                           ),
                         ),
                         const SizedBox(width: 6),
+                        Text(
+                          l10n.typing,
+                          style: TextStyle(
+                            color: Theme.of(context)
+                                .textTheme
+                                .bodySmall
+                                ?.color
+                                ?.withOpacity(0.7),
+                            fontSize: 13,
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
                       ] else ...[
+                        // Online / Offline indicator
                         Container(
                           width: 8,
                           height: 8,
                           decoration: BoxDecoration(
-                            color: Colors.green,
+                            color: isOnline ? Colors.green : Colors.red,
                             shape: BoxShape.circle,
                           ),
                         ),
                         const SizedBox(width: 6),
-                      ],
-                      Text(
-                        isTyping ? l10n.typing : l10n.online,
-                        style: TextStyle(
-                          color: Theme.of(context)
-                              .textTheme
-                              .bodySmall
-                              ?.color
-                              ?.withOpacity(0.7),
-                          fontSize: 13,
-                          fontWeight: FontWeight.w400,
+
+                        Text(
+                          isOnline ? l10n.online : l10n.offline,
+                          style: TextStyle(
+                            color: isOnline ? Colors.green : Colors.red,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w400,
+                          ),
                         ),
-                      ),
+                      ],
                     ],
                   ),
                 ],
               ),
+
               // Actions
               Positioned(
                 right: 0,
@@ -114,7 +138,8 @@ class ChatAppBar extends StatelessWidget implements PreferredSizeWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     IconButton(
-                      onPressed: () => context.router.push(const SettingsRoute()),
+                      onPressed: () =>
+                          context.router.push(const SettingsRoute()),
                       icon: Icon(
                         Icons.settings_outlined,
                         color: Theme.of(context)
@@ -192,9 +217,9 @@ class ChatAppBar extends StatelessWidget implements PreferredSizeWidget {
       );
 
   void clearMessagesAndPopDialog(
-    BuildContext context,
-    BuildContext pageContext,
-  ) {
+      BuildContext context,
+      BuildContext pageContext,
+      ) {
     Navigator.pop(context);
     ChatScope.clearMessages(pageContext);
   }

@@ -133,6 +133,12 @@ abstract class AppLocalizations {
   /// **'Online'**
   String get online;
 
+  /// Status indicator when assistant is Offline
+  ///
+  /// In en, this message translates to:
+  /// **'Offline'**
+  String get offline;
+
   /// Status indicator when assistant is typing
   ///
   /// In en, this message translates to:

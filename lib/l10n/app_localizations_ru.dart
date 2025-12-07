@@ -18,6 +18,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get online => 'В сети';
 
   @override
+  String get offline => 'Оффлайн';
+
+  @override
   String get typing => 'Печатает...';
 
   @override

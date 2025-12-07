@@ -18,6 +18,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get online => 'En ligne';
 
   @override
+  String get offline => 'Hors ligne';
+
+  @override
   String get typing => 'En train d\'écrire...';
 
   @override

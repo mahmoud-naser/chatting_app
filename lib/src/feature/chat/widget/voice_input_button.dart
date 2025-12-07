@@ -59,10 +59,10 @@ class _VoiceInputButtonState extends State<VoiceInputButton>
   }
 
   Future<void> _initializeVoiceService() async {
-    final initialized = await _voiceService.initialize();
+    await _voiceService.initialize();
     if (mounted) {
       setState(() {
-        _isInitialized = initialized;
+        _isInitialized = true;
       });
     }
   }

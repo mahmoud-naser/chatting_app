@@ -18,6 +18,9 @@ class AppLocalizationsHi extends AppLocalizations {
   String get online => 'ऑनलाइन';
 
   @override
+  String get offline => 'ऑफ़लाइन';
+
+  @override
   String get typing => 'टाइप कर रहे हैं...';
 
   @override

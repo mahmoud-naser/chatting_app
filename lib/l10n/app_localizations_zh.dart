@@ -18,6 +18,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get online => '在线';
 
   @override
+  String get offline => '離線';
+
+  @override
   String get typing => '正在输入...';
 
   @override
