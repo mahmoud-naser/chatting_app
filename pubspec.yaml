@@ -24,7 +24,7 @@ dependencies:
   intl: ^0.20.2
   flutter_localizations:
     sdk: flutter
-  shared_preferences: ^2.2.2
+  shared_preferences: ^2.2.3
   permission_handler: ^11.3.1
   speech_to_text: ^7.0.0
   android_intent_plus: ^4.0.0

@@ -1,7 +1,9 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../core/storage/app_prefs.dart';
 import '../../bloc/chat_bloc.dart';
+import '../../service/chat_storage.dart';
 
 class ChatScope extends StatelessWidget {
   final Widget child;
@@ -12,8 +14,10 @@ class ChatScope extends StatelessWidget {
     context.read<ChatBloc>().add(SendMessageEvent(text));
   }
 
-  static void clearMessages(BuildContext context) {
+  static Future<void> clearMessages(BuildContext context) async {
     context.read<ChatBloc>().add(ClearMessagesEvent());
+    await AppPrefs().clearMessages();
+
   }
 
   const ChatScope._(this.child);
@@ -21,7 +25,7 @@ class ChatScope extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => ChatBloc(),
+      create: (_) => ChatBloc(ChatStorage()),
       child: child,
     );
   }

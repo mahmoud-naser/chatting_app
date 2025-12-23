@@ -10,19 +10,16 @@ class ChatStorage {
     final raw = prefs.getString(_key);
     if (raw == null || raw.isEmpty) return [];
 
-    final decoded = jsonDecode(raw);
-    if (decoded is! List) return [];
-
+    final decoded = jsonDecode(raw) as List<dynamic>;
     return decoded
-        .whereType<Map<String, dynamic>>()
-        .map((m) => types.Message.fromJson(m))
+        .map((e) => types.Message.fromJson(e as Map<String, dynamic>))
         .toList();
   }
 
   Future<void> save(List<types.Message> messages) async {
     final prefs = await SharedPreferences.getInstance();
-    final list = messages.map((m) => m.toJson()).toList();
-    await prefs.setString(_key, jsonEncode(list));
+    final encoded = jsonEncode(messages.map((m) => m.toJson()).toList());
+    await prefs.setString(_key, encoded);
   }
 
   Future<void> clear() async {

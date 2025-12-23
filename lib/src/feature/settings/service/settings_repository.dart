@@ -6,6 +6,7 @@ import 'package:chat_app_new/src/feature/settings/enum/app_theme.dart';
 class SettingsRepository {
   static const String _themeKey = 'app_theme';
   static const String _languageKey = 'app_language';
+  static const String _showTimeKey = 'show_time';
 
   Future<AppTheme> getTheme() async {
     try {
@@ -21,6 +22,16 @@ class SettingsRepository {
       // Handle error silently, return default
     }
     return AppTheme.system;
+  }
+
+  Future<bool> getShowTime() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(_showTimeKey) ?? true;
+  }
+
+  Future<void> saveShowTime(bool value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_showTimeKey, value);
   }
 
   Future<void> saveTheme(AppTheme theme) async {
@@ -57,4 +68,3 @@ class SettingsRepository {
     }
   }
 }
-

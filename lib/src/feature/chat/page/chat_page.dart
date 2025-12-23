@@ -3,22 +3,33 @@ import 'package:auto_route/auto_route.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_chat_ui/flutter_chat_ui.dart' as ui;
-import 'package:intl/intl.dart';
+import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
+import 'package:flutter_chat_ui/flutter_chat_ui.dart' as chat_ui;
 import 'dart:ui' as ui;
+import 'package:intl/intl.dart';
 
+import '../../../core/storage/app_prefs.dart';
 import '../bloc/chat_bloc.dart';
+import '../service/chat_storage.dart';
 import '../widget/chat_app_bar.dart';
 import '../widget/scope/chat_scope.dart';
 import '../service/voice_input_service.dart';
 import '../widget/voice_recording_overlay.dart';
 
 @RoutePage(name: 'ChatRoute')
-class ChatPage extends StatefulWidget {
+class ChatPage extends StatefulWidget implements AutoRouteWrapper {
   const ChatPage({super.key});
 
   @override
   State<ChatPage> createState() => _ChatPageState();
+
+  @override
+  Widget wrappedRoute(BuildContext context) {
+    return BlocProvider(
+      create: (_) => ChatBloc(ChatStorage()),
+      child: this,
+    );
+  }
 }
 
 class _ChatPageState extends State<ChatPage> {
@@ -48,6 +59,11 @@ class _ChatPageState extends State<ChatPage> {
       });
     });
     Future.microtask(() async {
+      final prefs = AppPrefs();
+      final saved = await prefs.loadMessages();
+      if (mounted) {
+        context.read<ChatBloc>().add(SetMessagesEvent(saved));
+      }
       await _voiceService.initialize();
     });
 
@@ -111,7 +127,12 @@ class _ChatPageState extends State<ChatPage> {
 
   @override
   Widget build(BuildContext context) {
-    return ChatScope(
+    final prefs = AppPrefs();
+    return ChatScope(child:BlocListener<ChatBloc, ChatState>(
+      listenWhen: (prev, curr) => prev.messages.length != curr.messages.length,
+      listener: (context, state) async {
+        await prefs.saveMessages(state.messages);
+      },
       child: BlocBuilder<ChatBloc, ChatState>(
         builder: (context, state) {
           return Stack(
@@ -123,7 +144,7 @@ class _ChatPageState extends State<ChatPage> {
                 ),
 
                 // 👇👇 جسم الدردشة Scrollable طبيعي 100%
-                body: ui.Chat(
+                body: chat_ui.Chat(
                   dateHeaderBuilder: (header) => Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8),
                     child: Center(
@@ -227,9 +248,94 @@ class _ChatPageState extends State<ChatPage> {
                   ),
                   messages: state.messages,
                   user: state.user,
-                  inputOptions: const ui.InputOptions(enabled: false),
+                  inputOptions: const chat_ui.InputOptions(enabled: false),
                   onSendPressed: (partial) {
                     ChatScope.sendMessage(context, partial.text);
+                  },
+                  bubbleBuilder: (child,
+                      {required message, required nextMessageInGroup}) {
+                    final msg = message as types.Message;
+                    final isMe = msg.author.id == state.user.id;
+
+                    final lang = Localizations.localeOf(context)
+                        .languageCode
+                        .toLowerCase();
+                    final isArabic = lang == 'ar';
+                    final dir =
+                        isArabic ? ui.TextDirection.rtl : ui.TextDirection.ltr;
+
+                    final createdAtMs =
+                        msg.createdAt ?? DateTime.now().millisecondsSinceEpoch;
+                    final time = DateFormat('HH:mm').format(
+                      DateTime.fromMillisecondsSinceEpoch(createdAtMs),
+                    );
+
+                    final bubbleColor = isMe
+                        ? Theme.of(context).primaryColor
+                        : Colors.grey[200]!;
+                    final textColor = isMe ? Colors.white : Colors.black87;
+
+                    return Align(
+                      alignment:
+                          isMe ? Alignment.centerRight : Alignment.centerLeft,
+
+                      // 👇 يحدد أقصى عرض للفقاعة
+                      child: ConstrainedBox(
+                        constraints: BoxConstraints(
+                          maxWidth: MediaQuery.of(context).size.width * 0.7,
+                        ),
+
+                        // 👇 يجعل العرض يلتف حول المحتوى
+                        child: Container(
+                          margin: EdgeInsets.only(
+                            left: isMe ? 40 : 2,
+                            right: isMe ? 2 : 40,
+                          ),
+                          padding: EdgeInsets.only(
+                            right: isArabic ? 0 : 10,
+                            left: isArabic ? 10 : 0,
+                            bottom: 6,
+                          ),
+                          decoration: BoxDecoration(
+                            color: bubbleColor,
+                            borderRadius: BorderRadius.only(
+                                topLeft:
+                                    isMe ? Radius.circular(18) : Radius.zero,
+                                topRight:
+                                    isMe ? Radius.zero : Radius.circular(18),
+                                bottomLeft: Radius.circular(18),
+                                bottomRight: Radius.circular(18)),
+                          ),
+                          child: Directionality(
+                            textDirection: dir, // ✅ الاتجاه حسب اللغة
+                            child: Wrap(
+                              crossAxisAlignment: WrapCrossAlignment.end,
+                              alignment: WrapAlignment.end,
+                              children: [
+                                DefaultTextStyle(
+                                  style: TextStyle(
+                                    color: textColor,
+                                    fontSize: 15,
+                                    height: 1.3,
+                                  ),
+                                  child: child,
+                                ),
+                                Text(
+                                  time,
+                                  textDirection: dir,
+                                  style: TextStyle(
+                                    fontSize: 11,
+                                    color: isMe
+                                        ? Colors.white70
+                                        : Colors.black54,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    );
                   },
                 ),
 
@@ -244,6 +350,6 @@ class _ChatPageState extends State<ChatPage> {
           );
         },
       ),
-    );
+    ));
   }
 }
