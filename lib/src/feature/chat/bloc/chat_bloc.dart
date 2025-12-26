@@ -22,7 +22,10 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
 
   Future<void> _onLoad(LoadMessagesEvent event, Emitter<ChatState> emit) async {
     final msgs = await _storage.load();
+    msgs.sort((a, b) =>
+        (b.createdAt ?? 0).compareTo(a.createdAt ?? 0)); // الأحدث أولاً
     emit(state.copyWith(messages: msgs));
+
   }
 
   Future<void> _onSendMessage(
@@ -37,7 +40,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     );
 
     // ✅ الرسالة الجديدة في النهاية (لتطلع تحت)
-    final newMessages = [...state.messages, message];
+    final newMessages = [message, ...state.messages];
 
     emit(state.copyWith(messages: newMessages));
     await _storage.save(newMessages);

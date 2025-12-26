@@ -1,5 +1,6 @@
 import 'package:android_intent_plus/android_intent.dart';
 import 'package:auto_route/auto_route.dart';
+import 'package:bubble/bubble.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -128,7 +129,8 @@ class _ChatPageState extends State<ChatPage> {
   @override
   Widget build(BuildContext context) {
     final prefs = AppPrefs();
-    return ChatScope(child:BlocListener<ChatBloc, ChatState>(
+    return ChatScope(
+        child: BlocListener<ChatBloc, ChatState>(
       listenWhen: (prev, curr) => prev.messages.length != curr.messages.length,
       listener: (context, state) async {
         await prefs.saveMessages(state.messages);
@@ -263,7 +265,8 @@ class _ChatPageState extends State<ChatPage> {
                     final isArabic = lang == 'ar';
                     final dir =
                         isArabic ? ui.TextDirection.rtl : ui.TextDirection.ltr;
-
+                    final showTail =
+                        !nextMessageInGroup; // ✅ فقط آخر رسالة في المجموعة
                     final createdAtMs =
                         msg.createdAt ?? DateTime.now().millisecondsSinceEpoch;
                     final time = DateFormat('HH:mm').format(
@@ -286,25 +289,16 @@ class _ChatPageState extends State<ChatPage> {
                         ),
 
                         // 👇 يجعل العرض يلتف حول المحتوى
-                        child: Container(
-                          margin: EdgeInsets.only(
-                            left: isMe ? 40 : 2,
-                            right: isMe ? 2 : 40,
-                          ),
-                          padding: EdgeInsets.only(
-                            right: isArabic ? 0 : 10,
-                            left: isArabic ? 10 : 0,
+                        child: Bubble(
+                          showNip: showTail,
+                          radius: Radius.circular(10),
+                          nip: isMe ? BubbleNip.rightTop : BubbleNip.leftTop,
+                          color: bubbleColor,
+                          padding: BubbleEdges.only(
+                            right: isArabic ? 0 : 5,
+                            left: isArabic ? 5 : 0,
                             bottom: 6,
-                          ),
-                          decoration: BoxDecoration(
-                            color: bubbleColor,
-                            borderRadius: BorderRadius.only(
-                                topLeft:
-                                    isMe ? Radius.circular(18) : Radius.zero,
-                                topRight:
-                                    isMe ? Radius.zero : Radius.circular(18),
-                                bottomLeft: Radius.circular(18),
-                                bottomRight: Radius.circular(18)),
+                            top: nextMessageInGroup ? 2 : 6,
                           ),
                           child: Directionality(
                             textDirection: dir, // ✅ الاتجاه حسب اللغة
@@ -325,9 +319,8 @@ class _ChatPageState extends State<ChatPage> {
                                   textDirection: dir,
                                   style: TextStyle(
                                     fontSize: 11,
-                                    color: isMe
-                                        ? Colors.white70
-                                        : Colors.black54,
+                                    color:
+                                        isMe ? Colors.white70 : Colors.black54,
                                   ),
                                 ),
                               ],
