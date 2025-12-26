@@ -47,18 +47,20 @@ class _ChatPageState extends State<ChatPage> {
       action: 'android.settings.APPLICATION_DETAILS_SETTINGS',
       data: 'package:com.google.android.googlequicksearchbox',
     );
-
     await intent.launch();
   }
 
   @override
   void initState() {
     super.initState();
+
     Connectivity().onConnectivityChanged.listen((status) {
+      if (!mounted) return;
       setState(() {
         _isOnline = status != ConnectivityResult.none;
       });
     });
+
     Future.microtask(() async {
       final prefs = AppPrefs();
       final saved = await prefs.loadMessages();
@@ -68,8 +70,8 @@ class _ChatPageState extends State<ChatPage> {
       await _voiceService.initialize();
     });
 
-    // 🔵 نتيجة نهائية للكلام (بعد انتهاء المستخدم)
     _voiceService.onResult = (text) {
+      if (!mounted) return;
       setState(() {
         _controller.text = text;
         _controller.selection = TextSelection.fromPosition(
@@ -80,8 +82,8 @@ class _ChatPageState extends State<ChatPage> {
       });
     };
 
-    // 🟡 تحديث مباشر أثناء الكلام
     _voiceService.onPartialResult = (text) {
+      if (!mounted) return;
       setState(() {
         _controller.text = text;
         _controller.selection = TextSelection.fromPosition(
@@ -91,11 +93,11 @@ class _ChatPageState extends State<ChatPage> {
       });
     };
 
-    // 🔴 الأخطاء
     _voiceService.onError = (error) {
+      if (!mounted) return;
+
       if (error == "error_permission") {
         _showError("يرجى منح إذن الميكروفون لخدمات Google");
-
         openGoogleMicPermission();
       } else {
         _showError(error);
@@ -104,8 +106,8 @@ class _ChatPageState extends State<ChatPage> {
       setState(() => _isListening = false);
     };
 
-    // 🔵 حالة record
     _voiceService.onStateChanged = (state) {
+      if (!mounted) return;
       setState(() {
         _isListening = state == VoiceInputState.listening;
         if (!_isListening) _currentTranscript = null;
@@ -129,220 +131,255 @@ class _ChatPageState extends State<ChatPage> {
   @override
   Widget build(BuildContext context) {
     final prefs = AppPrefs();
-    return ChatScope(
-        child: BlocListener<ChatBloc, ChatState>(
-      listenWhen: (prev, curr) => prev.messages.length != curr.messages.length,
-      listener: (context, state) async {
-        await prefs.saveMessages(state.messages);
-      },
-      child: BlocBuilder<ChatBloc, ChatState>(
-        builder: (context, state) {
-          return Stack(
-            children: [
-              Scaffold(
-                appBar: ChatAppBar(
-                  isTyping: false,
-                  isOnline: _isOnline,
-                ),
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
-                // 👇👇 جسم الدردشة Scrollable طبيعي 100%
-                body: chat_ui.Chat(
-                  dateHeaderBuilder: (header) => Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8),
-                    child: Center(
+    // ✅ ألوان محسّنة للدارك مود
+    final inputBg = isDark ? const Color(0xFF1E1E1E) : Colors.grey[200]!;
+    final inputTextColor = isDark ? Colors.white : Colors.black87;
+    final hintColor = isDark ? Colors.white54 : Colors.black45;
+
+    final headerBg = isDark ? Colors.white10 : Colors.black.withOpacity(0.08);
+    final headerText = isDark ? Colors.white70 : Colors.black54;
+
+    final receivedBubble = isDark ? const Color(0xFF232323) : Colors.grey[200]!;
+    final receivedText = isDark ? Colors.white : Colors.black87;
+
+    return ChatScope(
+      child: BlocListener<ChatBloc, ChatState>(
+        listenWhen: (prev, curr) =>
+            prev.messages.length != curr.messages.length,
+        listener: (context, state) async {
+          await prefs.saveMessages(state.messages);
+        },
+        child: BlocBuilder<ChatBloc, ChatState>(
+          builder: (context, state) {
+            return Stack(
+              children: [
+                Scaffold(
+                  appBar: ChatAppBar(
+                    isTyping: false,
+                    isOnline: _isOnline,
+                  ),
+                  body: chat_ui.Chat(
+                    theme: isDark
+                        ? chat_ui.DarkChatTheme()
+                        : chat_ui.DefaultChatTheme(),
+                    // ✅ Date header ألوانه تتغيّر حسب الدارك مود
+                    dateHeaderBuilder: (header) => Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      child: Center(
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 6),
+                          decoration: BoxDecoration(
+                            color: headerBg,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Text(
+                            DateFormat('yyyy/MM/dd').format(header.dateTime),
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: headerText,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    // ✅ Input bottom widget (WhatsApp style)
+                    customBottomWidget: SafeArea(
                       child: Container(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 6),
-                        decoration: BoxDecoration(
-                          color: Colors.grey.withOpacity(0.2),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Text(
-                          DateFormat('yyyy/MM/dd')
-                              .format(header.dateTime), // ← التاريخ فقط
-                          style: const TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.black54,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  customBottomWidget: SafeArea(
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 6),
-                      color: Theme.of(context).scaffoldBackgroundColor,
-                      child: Row(
-                        children: [
-                          // 🟩 TextField بدون ScrollView (الحل الأساسي)
-                          Expanded(
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 12, vertical: 8),
-                              decoration: BoxDecoration(
-                                color: Colors.grey[200],
-                                borderRadius: BorderRadius.circular(24),
-                              ),
-                              child: Builder(
-                                builder: (context) {
-                                  final locale = Localizations.localeOf(context)
-                                      .languageCode;
-                                  final isArabic = locale == "ar";
-                                  final textDirection = isArabic
-                                      ? ui.TextDirection.rtl
-                                      : ui.TextDirection.ltr;
-                                  final hint = isArabic
-                                      ? "اكتب رسالة…"
-                                      : "Type a message…";
+                            horizontal: 10, vertical: 6),
+                        color: Theme.of(context).scaffoldBackgroundColor,
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 12, vertical: 8),
+                                decoration: BoxDecoration(
+                                  color: inputBg,
+                                  borderRadius: BorderRadius.circular(24),
+                                  border: Border.all(
+                                    color: isDark
+                                        ? Colors.white12
+                                        : Colors.black12,
+                                  ),
+                                ),
+                                child: Builder(
+                                  builder: (context) {
+                                    final lang = Localizations.localeOf(context)
+                                        .languageCode
+                                        .toLowerCase();
+                                    final isArabic = lang == "ar";
+                                    final textDirection = isArabic
+                                        ? ui.TextDirection.rtl
+                                        : ui.TextDirection.ltr;
+                                    final hint = isArabic
+                                        ? "اكتب رسالة…"
+                                        : "Type a message…";
 
-                                  return Directionality(
-                                    textDirection: textDirection,
-                                    child: TextField(
-                                      controller: _controller,
-                                      minLines: 1,
-                                      maxLines: 5,
-                                      onChanged: (text) {
-                                        setState(() => _showSendButton =
-                                            text.trim().isNotEmpty);
-                                      },
-                                      decoration: InputDecoration(
-                                        border: InputBorder.none,
-                                        hintText: hint,
+                                    return Directionality(
+                                      textDirection: textDirection,
+                                      child: TextField(
+                                        controller: _controller,
+                                        minLines: 1,
+                                        maxLines: 5,
+                                        style: TextStyle(
+                                          color: inputTextColor,
+                                          fontSize: 15,
+                                        ),
+                                        cursorColor:
+                                            Theme.of(context).primaryColor,
+                                        onChanged: (text) {
+                                          setState(() => _showSendButton =
+                                              text.trim().isNotEmpty);
+                                        },
+                                        decoration: InputDecoration(
+                                          border: InputBorder.none,
+                                          hintText: hint,
+                                          hintStyle:
+                                              TextStyle(color: hintColor),
+                                          isCollapsed: true,
+                                        ),
                                       ),
-                                    ),
-                                  );
-                                },
+                                    );
+                                  },
+                                ),
                               ),
                             ),
-                          ),
-                          const SizedBox(width: 8),
-
-                          // 🟦 زر إرسال أو زر مايك داخل TextField
-                          GestureDetector(
-                            onTap: () {
-                              if (_showSendButton) {
-                                ChatScope.sendMessage(
-                                    context, _controller.text.trim());
-                                _controller.clear();
-                                setState(() => _showSendButton = false);
-                              } else {
-                                _voiceService.startListening();
-                              }
-                            },
-                            child: Container(
-                              width: 48,
-                              height: 48,
-                              decoration: BoxDecoration(
-                                color: Theme.of(context).primaryColor,
-                                shape: BoxShape.circle,
-                              ),
-                              child: Icon(
-                                _showSendButton ? Icons.send : Icons.mic,
-                                color: Colors.white,
+                            const SizedBox(width: 8),
+                            GestureDetector(
+                              onTap: () {
+                                if (_showSendButton) {
+                                  ChatScope.sendMessage(
+                                      context, _controller.text.trim());
+                                  _controller.clear();
+                                  setState(() => _showSendButton = false);
+                                } else {
+                                  _voiceService.startListening();
+                                }
+                              },
+                              child: Container(
+                                width: 48,
+                                height: 48,
+                                decoration: BoxDecoration(
+                                  color: Theme.of(context).primaryColor,
+                                  shape: BoxShape.circle,
+                                ),
+                                child: Icon(
+                                  _showSendButton ? Icons.send : Icons.mic,
+                                  color: Colors.white,
+                                ),
                               ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                  messages: state.messages,
-                  user: state.user,
-                  inputOptions: const chat_ui.InputOptions(enabled: false),
-                  onSendPressed: (partial) {
-                    ChatScope.sendMessage(context, partial.text);
-                  },
-                  bubbleBuilder: (child,
-                      {required message, required nextMessageInGroup}) {
-                    final msg = message as types.Message;
-                    final isMe = msg.author.id == state.user.id;
 
-                    final lang = Localizations.localeOf(context)
-                        .languageCode
-                        .toLowerCase();
-                    final isArabic = lang == 'ar';
-                    final dir =
-                        isArabic ? ui.TextDirection.rtl : ui.TextDirection.ltr;
-                    final showTail =
-                        !nextMessageInGroup; // ✅ فقط آخر رسالة في المجموعة
-                    final createdAtMs =
-                        msg.createdAt ?? DateTime.now().millisecondsSinceEpoch;
-                    final time = DateFormat('HH:mm').format(
-                      DateTime.fromMillisecondsSinceEpoch(createdAtMs),
-                    );
+                    messages: state.messages,
+                    user: state.user,
+                    inputOptions: const chat_ui.InputOptions(enabled: false),
 
-                    final bubbleColor = isMe
-                        ? Theme.of(context).primaryColor
-                        : Colors.grey[200]!;
-                    final textColor = isMe ? Colors.white : Colors.black87;
+                    onSendPressed: (partial) {
+                      ChatScope.sendMessage(context, partial.text);
+                    },
 
-                    return Align(
-                      alignment:
-                          isMe ? Alignment.centerRight : Alignment.centerLeft,
+                    // ✅ Bubble builder محسّن للدارك مود
+                    bubbleBuilder: (child,
+                        {required message, required nextMessageInGroup}) {
+                      final msg = message as types.Message;
+                      final isMe = msg.author.id == state.user.id;
 
-                      // 👇 يحدد أقصى عرض للفقاعة
-                      child: ConstrainedBox(
-                        constraints: BoxConstraints(
-                          maxWidth: MediaQuery.of(context).size.width * 0.7,
-                        ),
+                      final lang = Localizations.localeOf(context)
+                          .languageCode
+                          .toLowerCase();
+                      final isArabic = lang == 'ar';
+                      final dir = isArabic
+                          ? ui.TextDirection.rtl
+                          : ui.TextDirection.ltr;
 
-                        // 👇 يجعل العرض يلتف حول المحتوى
-                        child: Bubble(
-                          showNip: showTail,
-                          radius: Radius.circular(10),
-                          nip: isMe ? BubbleNip.rightTop : BubbleNip.leftTop,
-                          color: bubbleColor,
-                          padding: BubbleEdges.only(
-                            right: isArabic ? 0 : 5,
-                            left: isArabic ? 5 : 0,
-                            bottom: 6,
-                            top: nextMessageInGroup ? 2 : 6,
+                      final showTail = !nextMessageInGroup;
+
+                      final createdAtMs = msg.createdAt ??
+                          DateTime.now().millisecondsSinceEpoch;
+                      final time = DateFormat('HH:mm').format(
+                        DateTime.fromMillisecondsSinceEpoch(createdAtMs),
+                      );
+
+                      final bubbleColor = isMe
+                          ? Theme.of(context).primaryColor
+                          : receivedBubble;
+
+                      final textColor = isMe ? Colors.white : receivedText;
+
+                      final timeColor = isMe
+                          ? Colors.white70
+                          : (isDark ? Colors.white60 : Colors.black54);
+
+                      return Align(
+                        alignment:
+                            isMe ? Alignment.centerRight : Alignment.centerLeft,
+                        child: ConstrainedBox(
+                          constraints: BoxConstraints(
+                            maxWidth: MediaQuery.of(context).size.width * 0.7,
                           ),
-                          child: Directionality(
-                            textDirection: dir, // ✅ الاتجاه حسب اللغة
-                            child: Wrap(
-                              crossAxisAlignment: WrapCrossAlignment.end,
-                              alignment: WrapAlignment.end,
-                              children: [
-                                DefaultTextStyle(
-                                  style: TextStyle(
-                                    color: textColor,
-                                    fontSize: 15,
-                                    height: 1.3,
+                          child: Bubble(
+                            showNip: showTail,
+                            radius: const Radius.circular(10),
+                            nip: isMe ? BubbleNip.rightTop : BubbleNip.leftTop,
+                            color: bubbleColor,
+                            padding: BubbleEdges.only(
+                              right: isArabic ? 0 : 6,
+                              left: isArabic ? 6 : 0,
+                              bottom: 6,
+                              top: nextMessageInGroup ? 2 : 6,
+                            ),
+                            child: Directionality(
+                              textDirection: dir,
+                              child: Wrap(
+                                crossAxisAlignment: WrapCrossAlignment.end,
+                                alignment: WrapAlignment.end,
+                                children: [
+                                  DefaultTextStyle(
+                                    style: TextStyle(
+                                      color: textColor,
+                                      fontSize: 15,
+                                      height: 1.3,
+                                    ),
+                                    child: child,
                                   ),
-                                  child: child,
-                                ),
-                                Text(
-                                  time,
-                                  textDirection: dir,
-                                  style: TextStyle(
-                                    fontSize: 11,
-                                    color:
-                                        isMe ? Colors.white70 : Colors.black54,
+                                  const SizedBox(width: 6),
+                                  Text(
+                                    time,
+                                    textDirection: dir,
+                                    style: TextStyle(
+                                      fontSize: 11,
+                                      color: timeColor,
+                                    ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                    );
-                  },
+                      );
+                    },
+                  ),
                 ),
-
-                // 👇👇 شريط الإدخال لا يغطي الشاشة (WhatsApp style)
-              ),
-              if (_isListening)
-                VoiceRecordingOverlay(
-                  onStop: () => _voiceService.stopListening(),
-                  transcript: _currentTranscript ?? "",
-                ),
-            ],
-          );
-        },
+                if (_isListening)
+                  VoiceRecordingOverlay(
+                    onStop: () => _voiceService.stopListening(),
+                    transcript: _currentTranscript ?? "",
+                  ),
+              ],
+            );
+          },
+        ),
       ),
-    ));
+    );
   }
 }
