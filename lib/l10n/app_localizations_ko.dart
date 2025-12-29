@@ -21,6 +21,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get offline => '오프라인';
 
   @override
+  String get listening => '듣는 중...';
+
+  @override
   String get typing => '입력 중...';
 
   @override

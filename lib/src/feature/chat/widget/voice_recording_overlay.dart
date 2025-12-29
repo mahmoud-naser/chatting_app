@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
-
+import '../../../../l10n/app_localizations.dart';
 class VoiceRecordingOverlay extends StatefulWidget {
   final VoidCallback onStop;
-  final String? transcript;
+  final String transcript;
 
   const VoiceRecordingOverlay({
+    super.key,
     required this.onStop,
-    this.transcript,
+    required this.transcript,
   });
 
   @override
@@ -16,97 +16,85 @@ class VoiceRecordingOverlay extends StatefulWidget {
 
 class _VoiceRecordingOverlayState extends State<VoiceRecordingOverlay>
     with SingleTickerProviderStateMixin {
-  late AnimationController _pulseController;
+  late AnimationController _controller;
 
   @override
   void initState() {
     super.initState();
-    _pulseController = AnimationController(
+    _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 1000),
-    )..repeat(reverse: true);
+      duration: const Duration(milliseconds: 1200),
+    )..repeat();
   }
 
   @override
   void dispose() {
-    _pulseController.dispose();
+    _controller.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: Colors.black.withOpacity(0.7),
-      child: SafeArea(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            AnimatedBuilder(
-              animation: _pulseController,
-              builder: (context, child) {
-                return Container(
-                  width: 120 + (_pulseController.value * 40),
-                  height: 120 + (_pulseController.value * 40),
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Colors.red.withOpacity(0.3 - (_pulseController.value * 0.2)),
-                  ),
-                  child: Center(
-                    child: Container(
-                      width: 100,
-                      height: 100,
-                      decoration: const BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: Colors.red,
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final l10n = AppLocalizations.of(context)!;
+    return Positioned.fill(
+      child: Material(
+        color: Colors.black.withOpacity(0.4),
+        child: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // 🔵 Pulse animation
+              SizedBox(
+                width: 120,
+                height: 120,
+                child: AnimatedBuilder(
+                  animation: _controller,
+                  builder: (_, __) {
+                    final scale = 1 + (_controller.value * 0.5);
+                    return Transform.scale(
+                      scale: scale,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Theme.of(context)
+                              .primaryColor
+                              .withOpacity(1 - _controller.value),
+                        ),
                       ),
-                      child: const Icon(
-                        Icons.mic,
-                        color: Colors.white,
-                        size: 50,
-                      ),
-                    ),
-                  ),
-                );
-              },
-            ),
-            const SizedBox(height: 32),
-            const Text(
-              'Listening...',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 20,
-                fontWeight: FontWeight.w500,
+                    );
+                  },
+                ),
               ),
-            ),
-            if (widget.transcript != null && widget.transcript!.isNotEmpty) ...[
               const SizedBox(height: 16),
+
+              // 🎙️ Mic icon
+              Icon(
+                Icons.mic,
+                size: 36,
+                color: Colors.white,
+              ),
+
+              const SizedBox(height: 12),
+
+              // 📝 live transcript
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 32),
+                padding: const EdgeInsets.symmetric(horizontal: 24),
                 child: Text(
-                  widget.transcript!,
+                  widget.transcript.isEmpty
+                      ? l10n.listening
+                      : widget.transcript,
                   textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    color: Colors.white70,
-                    fontSize: 16,
+                  style: TextStyle(
+                    color: isDark ? Colors.white : Colors.white,
+                    fontSize: 14,
                   ),
                 ),
               ),
             ],
-            const SizedBox(height: 48),
-            ElevatedButton.icon(
-              onPressed: widget.onStop,
-              icon: const Icon(Icons.stop),
-              label: const Text('Stop Recording'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.white,
-                foregroundColor: Colors.black,
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-              ),
-            ),
-          ],
+          ),
         ),
       ),
     );
   }
 }
-

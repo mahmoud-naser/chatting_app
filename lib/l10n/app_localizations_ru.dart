@@ -21,6 +21,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get offline => 'Оффлайн';
 
   @override
+  String get listening => 'Слушаю...';
+
+  @override
   String get typing => 'Печатает...';
 
   @override

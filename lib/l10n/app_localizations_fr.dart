@@ -21,6 +21,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get offline => 'Hors ligne';
 
   @override
+  String get listening => 'Écoute...';
+
+  @override
   String get typing => 'En train d\'écrire...';
 
   @override

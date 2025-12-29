@@ -145,6 +145,12 @@ abstract class AppLocalizations {
   /// **'Typing...'**
   String get typing;
 
+  /// Status indicator when user is listening
+  ///
+  /// In en, this message translates to:
+  /// **'Listening...'**
+  String get listening;
+
   /// Settings page title
   ///
   /// In en, this message translates to:

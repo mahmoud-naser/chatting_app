@@ -21,6 +21,9 @@ class AppLocalizationsIt extends AppLocalizations {
   String get offline => 'Offline';
 
   @override
+  String get listening => 'In ascolto...';
+
+  @override
   String get typing => 'Digitando...';
 
   @override

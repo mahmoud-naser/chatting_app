@@ -21,6 +21,9 @@ class AppLocalizationsPt extends AppLocalizations {
   String get offline => 'Offline';
 
   @override
+  String get listening => 'Ouvindo...';
+
+  @override
   String get typing => 'Digitando...';
 
   @override

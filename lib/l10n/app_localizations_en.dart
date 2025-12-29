@@ -21,6 +21,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get offline => 'Offline';
 
   @override
+  String get listening => 'Listening...';
+
+  @override
   String get typing => 'Typing...';
 
   @override

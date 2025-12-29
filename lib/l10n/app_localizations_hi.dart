@@ -24,6 +24,9 @@ class AppLocalizationsHi extends AppLocalizations {
   String get typing => 'टाइप कर रहे हैं...';
 
   @override
+  String get listening => 'सुन रहा है...';
+
+  @override
   String get settings => 'सेटिंग्स';
 
   @override

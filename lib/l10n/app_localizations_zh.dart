@@ -21,6 +21,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get offline => '離線';
 
   @override
+  String get listening => '正在聆听...';
+
+  @override
   String get typing => '正在输入...';
 
   @override

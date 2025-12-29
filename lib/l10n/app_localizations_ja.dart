@@ -21,6 +21,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get offline => 'オフライン';
 
   @override
+  String get listening => '聞いています...';
+
+  @override
   String get typing => '入力中...';
 
   @override
