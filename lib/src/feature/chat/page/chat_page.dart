@@ -50,6 +50,24 @@ class _ChatPageState extends State<ChatPage> {
     await intent.launch();
   }
 
+  bool isTextRTL(String text) {
+    for (final rune in text.runes) {
+      final char = String.fromCharCode(rune);
+
+      // تجاهل المسافات والرموز
+      if (RegExp(r'[\s0-9\p{P}\p{S}]', unicode: true).hasMatch(char)) {
+        continue;
+      }
+
+      // Arabic / Persian / Urdu ranges
+      return RegExp(
+        r'[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF]',
+      ).hasMatch(char);
+    }
+    return false;
+  }
+
+
   @override
   void initState() {
     super.initState();
@@ -291,16 +309,12 @@ class _ChatPageState extends State<ChatPage> {
                     // ✅ Bubble builder محسّن للدارك مود
                     bubbleBuilder: (child,
                         {required message, required nextMessageInGroup}) {
-                      final msg = message as types.Message;
+                      final msg = message as types.TextMessage;
                       final isMe = msg.author.id == state.user.id;
 
-                      final lang = Localizations.localeOf(context)
-                          .languageCode
-                          .toLowerCase();
-                      final isArabic = lang == 'ar';
-                      final dir = isArabic
-                          ? ui.TextDirection.rtl
-                          : ui.TextDirection.ltr;
+                      // ✅ تحديد الاتجاه حسب محتوى الرسالة
+                      final isRTL = isTextRTL(msg.text);
+                      final dir = isRTL ? ui.TextDirection.rtl : ui.TextDirection.ltr;
 
                       final showTail = !nextMessageInGroup;
 
@@ -310,11 +324,18 @@ class _ChatPageState extends State<ChatPage> {
                         DateTime.fromMillisecondsSinceEpoch(createdAtMs),
                       );
 
+                      final isDark =
+                          Theme.of(context).brightness == Brightness.dark;
+
                       final bubbleColor = isMe
                           ? Theme.of(context).primaryColor
-                          : receivedBubble;
+                          : (isDark
+                              ? const Color(0xFF1E1E1E)
+                              : Colors.grey[200]!);
 
-                      final textColor = isMe ? Colors.white : receivedText;
+                      final textColor = isMe
+                          ? Colors.white
+                          : (isDark ? Colors.white : Colors.black87);
 
                       final timeColor = isMe
                           ? Colors.white70
@@ -325,43 +346,45 @@ class _ChatPageState extends State<ChatPage> {
                             isMe ? Alignment.centerRight : Alignment.centerLeft,
                         child: ConstrainedBox(
                           constraints: BoxConstraints(
-                            maxWidth: MediaQuery.of(context).size.width * 0.7,
+                            maxWidth: MediaQuery.of(context).size.width * 0.72,
                           ),
                           child: Bubble(
                             showNip: showTail,
-                            radius: const Radius.circular(10),
                             nip: isMe ? BubbleNip.rightTop : BubbleNip.leftTop,
+                            radius: const Radius.circular(12),
                             color: bubbleColor,
-                            padding: BubbleEdges.only(
-                              right: isArabic ? 0 : 6,
-                              left: isArabic ? 6 : 0,
-                              bottom: 6,
-                              top: nextMessageInGroup ? 2 : 6,
-                            ),
+                            padding: const BubbleEdges.fromLTRB(12, 8, 12, 8),
                             child: Directionality(
                               textDirection: dir,
-                              child: Wrap(
-                                crossAxisAlignment: WrapCrossAlignment.end,
-                                alignment: WrapAlignment.end,
-                                children: [
-                                  DefaultTextStyle(
-                                    style: TextStyle(
-                                      color: textColor,
-                                      fontSize: 15,
-                                      height: 1.3,
+                              child: RichText(
+                                text: TextSpan(
+                                  children: [
+                                    // 📝 النص
+                                    TextSpan(
+                                      text: msg.text,
+                                      style: TextStyle(
+                                        color: textColor,
+                                        fontSize: 15,
+                                        height: 1.3,
+                                      ),
                                     ),
-                                    child: child,
-                                  ),
-                                  const SizedBox(width: 6),
-                                  Text(
-                                    time,
-                                    textDirection: dir,
-                                    style: TextStyle(
-                                      fontSize: 11,
-                                      color: timeColor,
+
+                                    // مسافة صغيرة بين النص والوقت
+                                    const TextSpan(text: '  '),
+
+                                    // ⏰ الوقت (WidgetSpan)
+                                    WidgetSpan(
+                                      alignment: PlaceholderAlignment.bottom,
+                                      child: Text(
+                                        time,
+                                        style: TextStyle(
+                                          fontSize: 11,
+                                          color: timeColor,
+                                        ),
+                                      ),
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
                             ),
                           ),
